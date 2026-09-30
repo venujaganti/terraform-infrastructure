@@ -30,7 +30,7 @@ jobs:
           terraform_version: "1.9.8"
 
       - name: Check Terraform formatting
-        run: terraform fmt -check -recursive -diff
+        run: terraform fmt -check -recursive
 
       - name: Show Terraform version
         run: terraform version
