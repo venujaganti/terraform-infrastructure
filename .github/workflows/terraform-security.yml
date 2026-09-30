@@ -50,7 +50,7 @@ jobs:
         run: tflint --recursive
 
       - name: Setup Trivy
-        uses: aquasecurity/setup-trivy@v0.2.3
+        uses: aquasecurity/setup-trivy@v0.2.2
 
       - name: Run Trivy Terraform security scan
         run: |
