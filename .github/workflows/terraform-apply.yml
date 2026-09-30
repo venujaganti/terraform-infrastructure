@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-
   workflow_dispatch:
     inputs:
       environment:
@@ -18,6 +17,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write  # ← NEW: Allow GitHub to create OIDC tokens
 
 jobs:
   determine-environment:
@@ -53,6 +53,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ap-south-1
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
