@@ -1,0 +1,16 @@
+formatter: markdown table
+
+header-from: main.tf
+output-file: README.md
+output-mode: inject
+
+recursive:
+  enabled: true
+
+sections:
+  hide: []
+  show:
+    - inputs
+    - outputs
+    - providers
+    - resources

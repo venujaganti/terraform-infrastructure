@@ -1,0 +1,33 @@
+{
+  "name": "Terraform Infrastructure",
+
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+
+  "features": {
+    "ghcr.io/devcontainers/features/terraform:1": {
+      "version": "1.9.8"
+    },
+    "ghcr.io/devcontainers/features/aws-cli:1": {
+      "version": "latest"
+    }
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "hashicorp.terraform",
+        "amazonwebservices.aws-toolkit-vscode"
+      ],
+      "settings": {
+        "terraform.languageServer": {
+          "enabled": true
+        },
+        "editor.formatOnSave": true
+      }
+    }
+  },
+
+  "postCreateCommand": "terraform version && aws --version",
+
+  "remoteUser": "vscode"
+}

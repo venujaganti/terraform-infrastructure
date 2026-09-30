@@ -1,0 +1,77 @@
+name: Terraform Apply
+
+on:
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to deploy"
+        required: true
+        type: choice
+        options:
+          - dev
+          - staging
+          - production
+
+permissions:
+  contents: read
+
+jobs:
+  determine-environment:
+    name: Determine Deployment Environment
+    runs-on: ubuntu-latest
+
+    outputs:
+      environment: ${{ steps.environment.outputs.environment }}
+
+    steps:
+      - name: Determine environment
+        id: environment
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "environment=${{ inputs.environment }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "environment=dev" >> "$GITHUB_OUTPUT"
+          fi
+
+  terraform-apply:
+    name: Terraform Apply
+    needs: determine-environment
+    runs-on: ubuntu-latest
+
+    environment:
+      name: ${{ needs.determine-environment.outputs.environment }}
+
+    defaults:
+      run:
+        working-directory: environments/${{ needs.determine-environment.outputs.environment }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.8"
+
+      - name: Terraform Init
+        run: terraform init -input=false
+
+      - name: Terraform Validate
+        run: terraform validate -no-color
+
+      - name: Terraform Plan
+        run: |
+          terraform plan \
+            -input=false \
+            -no-color \
+            -var-file="terraform.tfvars" \
+            -out=tfplan
+
+      - name: Terraform Apply
+        run: terraform apply -input=false tfplan
